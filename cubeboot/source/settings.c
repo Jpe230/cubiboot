@@ -77,6 +77,13 @@ void load_settings() {
         settings.default_program = (char*)default_program;
     }
 
+    // default folder
+    const char *default_folder = ini_get(conf, "cubeboot", "default_folder");
+    if (default_folder != NULL) {
+        iprintf("Found default_folder = %s\n", default_folder);
+        settings.default_folder = (char*)default_folder;
+    }
+
     // swiss enable
     int force_swiss_default = 0;
     if (!ini_sget(conf, "cubeboot", "force_swiss_default", "%d", &force_swiss_default)) {

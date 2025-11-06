@@ -47,6 +47,7 @@ __attribute_data__ static u8 *cube_text_tex = NULL;
 __attribute_data__ char cube_logo_path[MAX_FILE_NAME] = {0};
 __attribute_data__ u32 force_progressive = 0;
 __attribute_data__ u32 force_swiss_boot = 0;
+__attribute_data__ char default_folder[MAX_FILE_NAME] = {0};
 
 // used if we are switching to 60Hz on a PAL IPL
 __attribute_data__ static int fix_pal_ntsc = 0;
@@ -353,8 +354,14 @@ __attribute_used__ void pre_thread_init() {
 
     gm_init_heap();
     gm_init_thread();
+
     if (!start_passthrough_game) {
-        gm_start_thread("/");
+        if (dvd_custom_open(default_folder, FILE_ENTRY_TYPE_DIR, 0) == 0) {
+            dvd_custom_close(dvd_custom_status()->fd);
+            gm_start_thread(default_folder);
+        } else {
+            gm_start_thread("/");
+        }
     }
 }
 

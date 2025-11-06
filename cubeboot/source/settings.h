@@ -12,6 +12,7 @@ typedef struct settings {
     u32 preboot_delay_ms;
     u32 postboot_delay_ms;
     char *default_program;
+    char *default_folder;
     char *boot_buttons[MAX_BUTTONS];
 } settings_t;
 
