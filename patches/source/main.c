@@ -348,6 +348,30 @@ __attribute_used__ void mod_cube_anim() {
     }
 }
 
+__attribute_used__ char* get_valid_path() {
+    if (default_folder[0] == '\0') {
+        OSReport("No default folder set, opening root\n");
+        return "/";
+    }
+
+    static char path[MAX_FILE_NAME];
+    if (default_folder[0] != '/') {
+        snprintf(path, sizeof(path), "/%s", default_folder);
+    } else {
+        strncpy(path, default_folder, sizeof(path));
+        path[sizeof(path) - 1] = '\0';
+    }
+
+    if (dvd_custom_open(path, FILE_ENTRY_TYPE_DIR, 0) != 0) {
+        OSReport("Could not open default folder: %s, opening root\n", path);
+        return "/";
+    }
+    dvd_custom_close(dvd_custom_status()->fd);
+
+    OSReport("Using default folder: %s\n", path);
+    return path;
+}
+
 __attribute_used__ void pre_thread_init() {
     dolphin_ARAMInit();
     orig_thread_init();
@@ -356,12 +380,7 @@ __attribute_used__ void pre_thread_init() {
     gm_init_thread();
 
     if (!start_passthrough_game) {
-        if (dvd_custom_open(default_folder, FILE_ENTRY_TYPE_DIR, 0) == 0) {
-            dvd_custom_close(dvd_custom_status()->fd);
-            gm_start_thread(default_folder);
-        } else {
-            gm_start_thread("/");
-        }
+        gm_start_thread(get_valid_path());
     }
 }
 
