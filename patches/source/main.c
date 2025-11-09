@@ -45,9 +45,9 @@ __attribute_data__ u32 start_passthrough_game = 0;
 
 __attribute_data__ static u8 *cube_text_tex = NULL;
 __attribute_data__ char cube_logo_path[MAX_FILE_NAME] = {0};
+__attribute_data__ char default_folder[MAX_FILE_NAME] = {0};
 __attribute_data__ u32 force_progressive = 0;
 __attribute_data__ u32 force_swiss_boot = 0;
-__attribute_data__ char default_folder[MAX_FILE_NAME] = {0};
 
 // used if we are switching to 60Hz on a PAL IPL
 __attribute_data__ static int fix_pal_ntsc = 0;
@@ -348,18 +348,17 @@ __attribute_used__ void mod_cube_anim() {
     }
 }
 
-__attribute_used__ char* get_valid_path() {
+__attribute_used__ char* resolve_default_folder() {
     if (default_folder[0] == '\0') {
         OSReport("No default folder set, opening root\n");
         return "/";
     }
 
-    static char path[MAX_FILE_NAME];
+    const char *path = default_folder;
+    static char path_buf[MAX_FILE_NAME];
     if (default_folder[0] != '/') {
-        snprintf(path, sizeof(path), "/%s", default_folder);
-    } else {
-        strncpy(path, default_folder, sizeof(path));
-        path[sizeof(path) - 1] = '\0';
+        snprintf(path_buf, sizeof(path_buf), "/%s", default_folder);
+        path = path_buf;
     }
 
     if (dvd_custom_open(path, FILE_ENTRY_TYPE_DIR, 0) != 0) {
@@ -378,9 +377,8 @@ __attribute_used__ void pre_thread_init() {
 
     gm_init_heap();
     gm_init_thread();
-
     if (!start_passthrough_game) {
-        gm_start_thread(get_valid_path());
+        gm_start_thread(resolve_default_folder());
     }
 }
 

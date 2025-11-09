@@ -5,6 +5,7 @@
 typedef struct settings {
     u32 cube_color;
     char *cube_logo;
+    char *default_folder;
     u32 force_swiss_default;
     u32 show_watermark;
     u32 disable_mcp_select;
@@ -12,7 +13,6 @@ typedef struct settings {
     u32 preboot_delay_ms;
     u32 postboot_delay_ms;
     char *default_program;
-    char *default_folder;
     char *boot_buttons[MAX_BUTTONS];
 } settings_t;
 
