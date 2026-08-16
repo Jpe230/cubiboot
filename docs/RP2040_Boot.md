@@ -16,8 +16,8 @@ it disappears. The firmware has been successfully updated.
 
 If you desoldered VCC you should resolder it now before booting your GameCube again.
 
-Make sure to download a copy of `cubeboot.ini` and copy it to your SD Card. This
-settings file allows you to customize aspects of the boot process.
+Create a root-level `config.ini` on your SD card to customize the boot process.
+See [Configuration](settings.md) for an example and the available settings.
 
 You no longer need an `IPL.dol` file on your SD Card after installing cubeboot as
 firmware.

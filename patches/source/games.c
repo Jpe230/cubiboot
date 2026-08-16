@@ -36,9 +36,6 @@
 #include "emu/tweaks.h"
 
 #define PRELOAD_LINE_COUNT 2
-#define ASSETS_PER_LINE 8
-#define ASSETS_PER_PAGE (ASSETS_PER_LINE * DRAW_TOTAL_ROWS)
-#define ASSETS_INITIAL_COUNT (ASSETS_PER_PAGE + (PRELOAD_LINE_COUNT * ASSETS_PER_LINE)) // assuming we start at the top
 #define ASSET_BUFFER_COUNT 128
 
 // Globals
@@ -50,6 +47,10 @@ OSMutex *game_enum_mutex = &game_enum_mutex_obj;
 
 char game_enum_path[128] = {0};
 bool game_enum_running = false;
+
+extern u32 start_passthrough_game;
+extern u32 auto_boot_dvd;
+extern u32 *bs2start_ready;
 
 // TODO: use a log2 malloc copy strategy for this
 __attribute_data_lowmem__ static gm_path_entry_t __gm_early_path_list[2000];
@@ -701,7 +702,8 @@ void gm_check_files(int path_count) {
         // OSReport("Checking header %s [%d]\n", entry->path, entry->type);
 
         bool force_unload = false;
-        if (gm_entry_count - (top_line_num * ASSETS_PER_LINE) > ASSETS_INITIAL_COUNT) {
+        int assets_initial_count = grid_columns * (DRAW_TOTAL_ROWS + PRELOAD_LINE_COUNT);
+        if (gm_entry_count - (top_line_num * grid_columns) > assets_initial_count) {
             force_unload = true;
         }
 
@@ -828,8 +830,8 @@ void gm_check_files(int path_count) {
 void gm_line_load(int line_num) {
     // OSReport("Line load %d\n", line_num);
 
-    for (int i = 0; i < ASSETS_PER_LINE; i++) {
-        int index = (line_num * ASSETS_PER_LINE) + i;
+    for (int i = 0; i < grid_columns; i++) {
+        int index = (line_num * grid_columns) + i;
         if (index >= gm_entry_count) break;
 
         gm_file_entry_t *entry = gm_entry_backing[index];
@@ -845,8 +847,8 @@ void gm_line_load(int line_num) {
 void gm_line_free(int line_num) {
     // OSReport("Line free %d\n", line_num);
 
-    for (int i = 0; i < ASSETS_PER_LINE; i++) {
-        int index = (line_num * ASSETS_PER_LINE) + i;
+    for (int i = 0; i < grid_columns; i++) {
+        int index = (line_num * grid_columns) + i;
         if (index >= gm_entry_count) break;
 
         gm_file_entry_t *entry = gm_entry_backing[index];
@@ -937,7 +939,7 @@ void gm_debug_func() {
 #endif
 
 void gm_setup_grid(int line_count, bool initial) {
-    number_of_lines = (line_count + 7) >> 3;
+    number_of_lines = (line_count + grid_columns - 1) / grid_columns;
     if (number_of_lines < 4) {
         number_of_lines = 4;
     }
@@ -1003,6 +1005,20 @@ void *gm_thread_worker(void* param) {
     gm_sort_files(list_info.num_paths);
     gm_check_files(list_info.num_paths);
     gm_setup_grid(gm_entry_count, false);
+
+    // Check the physical drive after file enumeration has completed. The probe
+    // uses synchronous DVD commands, so doing it in this worker keeps the UI
+    // responsive and avoids competing with directory reads.
+    if (auto_boot_dvd) {
+        OSReport("Checking physical DVD for auto boot\n");
+        if (emu_has_dvd()) {
+            OSReport("Physical DVD found; starting passthrough boot\n");
+            start_passthrough_game = 1;
+            *bs2start_ready = 1;
+        } else {
+            OSReport("No bootable physical DVD found\n");
+        }
+    }
 
     game_enum_running = false;
     // DCBlockStore((void*)OSRoundDown32B((u32)&game_enum_running));
@@ -1100,4 +1116,3 @@ void gm_deinit_thread() {
         OSUnlockMutex(game_enum_mutex);
     }
 }
-

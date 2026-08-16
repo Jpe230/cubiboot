@@ -77,6 +77,41 @@ void load_settings() {
         settings.default_folder = (char*)default_folder;
     }
 
+    // grid columns
+    u32 grid_columns = 8;
+    if (ini_sget(conf, "cubeboot", "grid_columns", "%u", &grid_columns)
+        && grid_columns >= 2 && grid_columns <= 8) {
+        iprintf("Found grid_columns = %u\n", grid_columns);
+        settings.grid_columns = grid_columns;
+    } else {
+        if (grid_columns != 8) {
+            iprintf("Invalid grid_columns = %u; using 8\n", grid_columns);
+        }
+        settings.grid_columns = 8;
+    }
+
+    // grid icon scale
+    u32 grid_icon_scale_percent = 100;
+    if (ini_sget(conf, "cubeboot", "grid_icon_scale_percent", "%u", &grid_icon_scale_percent)
+        && grid_icon_scale_percent >= 75 && grid_icon_scale_percent <= 150) {
+        iprintf("Found grid_icon_scale_percent = %u\n", grid_icon_scale_percent);
+        settings.grid_icon_scale_percent = grid_icon_scale_percent;
+    } else {
+        if (grid_icon_scale_percent != 100) {
+            iprintf("Invalid grid_icon_scale_percent = %u; using 100\n", grid_icon_scale_percent);
+        }
+        settings.grid_icon_scale_percent = 100;
+    }
+
+    // auto boot physical DVD
+    int auto_boot_dvd = 0;
+    if (!ini_sget(conf, "cubeboot", "auto_boot_dvd", "%d", &auto_boot_dvd)) {
+        settings.auto_boot_dvd = 0;
+    } else {
+        iprintf("Found auto_boot_dvd = %d\n", auto_boot_dvd);
+        settings.auto_boot_dvd = auto_boot_dvd != 0;
+    }
+
     // default program
     const char *default_program = ini_get(conf, "cubeboot", "default_program");
     if (default_program != NULL) {

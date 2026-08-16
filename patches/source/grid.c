@@ -15,7 +15,7 @@
 #define START_LINE 0
 #define ANIM_DIRECTION_UP 0
 #define ANIM_DIRECTION_DOWN 1
-#define MAX_LINES 240 // 240 lines * 8 slots = 1920 slots
+#define MAX_LINES (1920 / MIN_GRID_COLUMNS)
 
 bool grid_setup_done = false;
 __attribute_data_empty__ line_backing_t browser_lines[MAX_LINES];
@@ -50,7 +50,7 @@ void grid_setup_func() {
     }
 
     // initial
-    selected_slot = START_LINE * 8;
+    selected_slot = START_LINE * grid_columns;
     top_line_num = START_LINE;
 
     for (int line_num = 0; line_num < number_of_lines; line_num++) {

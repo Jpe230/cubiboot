@@ -18,6 +18,7 @@
 #include "flippy_sync.h"
 #include "gc_dvd.h"
 #include "games.h"
+#include "grid.h"
 
 #include "video.h"
 #include "dol.h"
@@ -42,6 +43,9 @@
 
 __attribute_data__ u32 cube_color = 0;
 __attribute_data__ u32 start_passthrough_game = 0;
+__attribute_data__ u32 grid_columns = MAX_GRID_COLUMNS;
+__attribute_data__ u32 grid_icon_scale_percent = 100;
+__attribute_data__ u32 auto_boot_dvd = 0;
 
 __attribute_data__ static u8 *cube_text_tex = NULL;
 __attribute_data__ char cube_logo_path[MAX_FILE_NAME] = {0};
@@ -354,12 +358,16 @@ __attribute_used__ char* resolve_default_folder() {
         return "/";
     }
 
-    const char *path = default_folder;
     static char path_buf[MAX_FILE_NAME];
-    if (default_folder[0] != '/') {
-        snprintf(path_buf, sizeof(path_buf), "/%s", default_folder);
-        path = path_buf;
+    size_t path_len = strlen(default_folder);
+    const char *prefix = default_folder[0] == '/' ? "" : "/";
+    const char *suffix = default_folder[path_len - 1] == '/' ? "" : "/";
+    int written = snprintf(path_buf, sizeof(path_buf), "%s%s%s", prefix, default_folder, suffix);
+    if (written < 0 || written >= sizeof(path_buf)) {
+        OSReport("Default folder path is too long, opening root\n");
+        return "/";
     }
+    const char *path = path_buf;
 
     if (dvd_custom_open(path, FILE_ENTRY_TYPE_DIR, 0) != 0) {
         OSReport("Could not open default folder: %s, opening root\n", path);

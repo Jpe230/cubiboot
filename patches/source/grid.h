@@ -14,6 +14,8 @@
 
 #define DRAW_OFFSET_Y 56
 #define DRAW_TOTAL_ROWS 4
+#define MIN_GRID_COLUMNS 2
+#define MAX_GRID_COLUMNS 8
 
 // ????
 // #define GRID_LOAD_MAX_LINES (DRAW_TOTAL_ROWS + 2)
@@ -37,6 +39,8 @@ typedef struct {
 } line_backing_t;
 
 extern line_backing_t browser_lines[];
+extern u32 grid_columns;
+extern u32 grid_icon_scale_percent;
 
 // helper
 f32 get_position_after(line_backing_t *line_backing);

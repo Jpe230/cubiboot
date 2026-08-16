@@ -14,6 +14,8 @@ If you have questions regarding this fork you can join the [Discord server](http
 3. Copy the .uf2 file to the USB drive
 4. Download the [latest Swiss](https://github.com/emukidid/swiss-gc/releases/latest) dol
 5. Rename the Swiss dol to ```swiss-gc.dol``` and place it on your SD card
+6. Optionally create a root-level [`config.ini`](docs/settings.md) to choose a
+   startup folder, browser layout, and boot behaviour.
 
 ## Installation - [PicoLoader](https://github.com/makeo/PicoLoader)/[PicoBoot](https://github.com/webhdx/PicoBoot) with gekkoboot payload
 1. Download the [```cubiboot.dol```](https://github.com/makeo/cubiboot/releases/latest/download/cubiboot.dol)
@@ -21,6 +23,8 @@ If you have questions regarding this fork you can join the [Discord server](http
 3. Copy the ```ipl.dol``` onto your SD card
 4. Download the [latest Swiss](https://github.com/emukidid/swiss-gc/releases/latest) dol
 5. Rename the Swiss dol to ```swiss-gc.dol``` and place it on your SD card
+6. Optionally create a root-level [`config.ini`](docs/settings.md) to choose a
+   startup folder, browser layout, and boot behaviour.
 
 ## Using In-Game Reset
 1. Download [```EXTRACT_TO_ROOT.zip```](https://github.com/makeo/cubiboot/releases/latest/download/EXTRACT_TO_ROOT.zip)

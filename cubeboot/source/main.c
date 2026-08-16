@@ -300,6 +300,9 @@ int main(int argc, char **argv) {
     // Copy settings into place
     set_patch_value(symshdr, syment, symstringdata, "start_passthrough_game", force_passthrough);
     set_patch_value(symshdr, syment, symstringdata, "cube_color", settings.cube_color);
+    set_patch_value(symshdr, syment, symstringdata, "grid_columns", settings.grid_columns);
+    set_patch_value(symshdr, syment, symstringdata, "grid_icon_scale_percent", settings.grid_icon_scale_percent);
+    set_patch_value(symshdr, syment, symstringdata, "auto_boot_dvd", settings.auto_boot_dvd);
     set_patch_value(symshdr, syment, symstringdata, "force_progressive", settings.progressive_enabled);
     set_patch_value(symshdr, syment, symstringdata, "force_swiss_boot", settings.force_swiss_default);
 
